@@ -1,0 +1,388 @@
+\hypertarget{classKOIL}{\section{K\+O\+I\+L Class Reference}
+\label{classKOIL}\index{K\+O\+I\+L@{K\+O\+I\+L}}
+}
+
+
+Kernelized Online Imbalanced Learning.  
+
+
+
+
+{\ttfamily \#include $<$K\+O\+I\+L.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classKOIL_a955e960acefa1e14bde3cfd966e09cee}{rs\+\_\+plus} (int $\ast$id\+\_\+train, int cnt\+\_\+train, int $\ast$id\+\_\+test, int cnt\+\_\+test, string losstype, \hyperlink{structsvm__model}{svm\+\_\+model} \&model, double \&A\+U\+C, double \&Accuracy, double \&time, int \&err\+\_\+count)
+\begin{DoxyCompactList}\small\item\em K\+O\+I\+L\+\_\+\+R\+S++. \end{DoxyCompactList}\item 
+void \hyperlink{classKOIL_a40e819db98e708acff5c1ecb3e5dd2d6}{fifo\+\_\+plus} (int $\ast$id\+\_\+train, int cnt\+\_\+train, int $\ast$id\+\_\+test, int cnt\+\_\+test, string losstype, \hyperlink{structsvm__model}{svm\+\_\+model} \&model, double \&A\+U\+C, double \&Accuracy, double \&time, int \&err\+\_\+count)
+\begin{DoxyCompactList}\small\item\em K\+O\+I\+L\+\_\+\+F\+I\+F\+O++. \end{DoxyCompactList}\item 
+void \hyperlink{classKOIL_a5c3c0e58872e51846c7544ba2133848e}{rs\+\_\+update\+\_\+budget} (\hyperlink{structsvm__node}{svm\+\_\+node} $\ast$xt, double at, int max\+\_\+n, int t, \hyperlink{structsvm__model}{svm\+\_\+model} \&model, double $\ast$\&alpha, \hyperlink{structsvm__node}{svm\+\_\+node} $\ast$$\ast$\&S\+V, int \&cur\+\_\+n, bool \&flag, int \&ridx)
+\begin{DoxyCompactList}\small\item\em K\+O\+I\+L\+\_\+\+R\+S++\+: update budget. \end{DoxyCompactList}\item 
+void \hyperlink{classKOIL_a1dab877e7a27788b0c24ffdfdb91e8fe}{fifo\+\_\+update\+\_\+budget} (\hyperlink{structsvm__node}{svm\+\_\+node} $\ast$xt, double at, int max\+\_\+n, \hyperlink{structsvm__model}{svm\+\_\+model} \&model, int \&fidx, double $\ast$\&alpha, \hyperlink{structsvm__node}{svm\+\_\+node} $\ast$$\ast$\&S\+V, int \&cur\+\_\+n, bool \&flag, int \&ridx)
+\begin{DoxyCompactList}\small\item\em K\+O\+I\+L\+\_\+\+F\+I\+F\+O++\+: update budget. \end{DoxyCompactList}\item 
+void \hyperlink{classKOIL_ac831cd779181338f8528591de98a51d8}{update\+\_\+b} (\hyperlink{structsvm__model}{svm\+\_\+model} \&model)
+\begin{DoxyCompactList}\small\item\em \hyperlink{classKOIL}{K\+O\+I\+L}\+: update threshold of decision function. \end{DoxyCompactList}\item 
+void \hyperlink{classKOIL_ad266706c4c77b6dc50b963140530599a}{update\+\_\+kernel} (\hyperlink{structsvm__node}{svm\+\_\+node} $\ast$xt, double yt, \hyperlink{structsvm__model}{svm\+\_\+model} \&model, double \&at)
+\begin{DoxyCompactList}\small\item\em update the weight for S\+V \end{DoxyCompactList}\item 
+void \hyperlink{classKOIL_a2d964c4947718b25ac8a850dae8af32c}{update\+\_\+kernel\+\_\+l2} (\hyperlink{structsvm__node}{svm\+\_\+node} $\ast$xt, double yt, \hyperlink{structsvm__model}{svm\+\_\+model} \&model, double \&at)
+\begin{DoxyCompactList}\small\item\em update the weight for S\+V \end{DoxyCompactList}\item 
+void \hyperlink{classKOIL_a4e6ac3a53e7e5f9fd7ee2f741345e749}{evaluate\+\_\+\+A\+U\+C} (double $\ast$f, double $\ast$y, int n, double \&A\+U\+C, double \&Accuracy)
+\begin{DoxyCompactList}\small\item\em the calculate the A\+U\+C and Accuracy between f and y \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classKOIL_a98784904e38b4fdf71ff1c7e63caddd1}{\hyperlink{structsvm__problem}{svm\+\_\+problem} {\bfseries prob}}\label{classKOIL_a98784904e38b4fdf71ff1c7e63caddd1}
+
+\item 
+\hypertarget{classKOIL_a2b910827505acdce2457cb7960e8a5b9}{\hyperlink{structsvm__model}{svm\+\_\+model} {\bfseries rs\+\_\+model}}\label{classKOIL_a2b910827505acdce2457cb7960e8a5b9}
+
+\item 
+\hypertarget{classKOIL_a992d7b664da2ff77920f7dd14b89f141}{\hyperlink{structsvm__model}{svm\+\_\+model} {\bfseries fifo\+\_\+model}}\label{classKOIL_a992d7b664da2ff77920f7dd14b89f141}
+
+\item 
+\hypertarget{classKOIL_ac809446823a4d407ff8f77b74cc7616c}{\hyperlink{structkoil__result}{koil\+\_\+result} {\bfseries rs\+\_\+result}}\label{classKOIL_ac809446823a4d407ff8f77b74cc7616c}
+
+\item 
+\hypertarget{classKOIL_a09761cc6575ec55f87efa7cf66462347}{\hyperlink{structkoil__result}{koil\+\_\+result} {\bfseries fifo\+\_\+result}}\label{classKOIL_a09761cc6575ec55f87efa7cf66462347}
+
+\item 
+\hypertarget{classKOIL_ab4ff0c590445a152b5ba505cfcfd7325}{string {\bfseries save\+\_\+result\+\_\+path}}\label{classKOIL_ab4ff0c590445a152b5ba505cfcfd7325}
+
+\item 
+\hypertarget{classKOIL_a74c42a61473dceabf9fd7f799cba8c63}{string {\bfseries load\+\_\+data\+\_\+path}}\label{classKOIL_a74c42a61473dceabf9fd7f799cba8c63}
+
+\item 
+\hypertarget{classKOIL_a39e86f3f9d39e071b9b8913908c88039}{string {\bfseries dataset\+\_\+file}}\label{classKOIL_a39e86f3f9d39e071b9b8913908c88039}
+
+\item 
+\hypertarget{classKOIL_a033edcf448066b715e010848fdb5ecf1}{string {\bfseries idx\+\_\+asso\+\_\+file}}\label{classKOIL_a033edcf448066b715e010848fdb5ecf1}
+
+\item 
+\hypertarget{classKOIL_a5503173541bf017c350557a4a690045d}{string {\bfseries idx\+\_\+cv\+\_\+file}}\label{classKOIL_a5503173541bf017c350557a4a690045d}
+
+\item 
+\hypertarget{classKOIL_a824a9d1bea0944376a1d17e9664e5b06}{string {\bfseries rs\+\_\+model\+\_\+file}}\label{classKOIL_a824a9d1bea0944376a1d17e9664e5b06}
+
+\item 
+\hypertarget{classKOIL_abfeba851718431dbf71af3eaad49657e}{string {\bfseries fifo\+\_\+model\+\_\+file}}\label{classKOIL_abfeba851718431dbf71af3eaad49657e}
+
+\item 
+\hypertarget{classKOIL_ac60f6c49044cfd05a81cfd39ff443f07}{string {\bfseries rs\+\_\+result\+\_\+file}}\label{classKOIL_ac60f6c49044cfd05a81cfd39ff443f07}
+
+\item 
+\hypertarget{classKOIL_a9f457055c57bfa17b917a46bce13ea84}{string {\bfseries fifo\+\_\+result\+\_\+file}}\label{classKOIL_a9f457055c57bfa17b917a46bce13ea84}
+
+\item 
+\hypertarget{classKOIL_a237945e60ba7bcb4a110e36ba0e2ab23}{string {\bfseries log\+\_\+file}}\label{classKOIL_a237945e60ba7bcb4a110e36ba0e2ab23}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Kernelized Online Imbalanced Learning. 
+
+\subsection{Member Function Documentation}
+\hypertarget{classKOIL_a4e6ac3a53e7e5f9fd7ee2f741345e749}{\index{K\+O\+I\+L@{K\+O\+I\+L}!evaluate\+\_\+\+A\+U\+C@{evaluate\+\_\+\+A\+U\+C}}
+\index{evaluate\+\_\+\+A\+U\+C@{evaluate\+\_\+\+A\+U\+C}!K\+O\+I\+L@{K\+O\+I\+L}}
+\subsubsection[{evaluate\+\_\+\+A\+U\+C}]{\setlength{\rightskip}{0pt plus 5cm}void K\+O\+I\+L\+::evaluate\+\_\+\+A\+U\+C (
+\begin{DoxyParamCaption}
+\item[{double $\ast$}]{f, }
+\item[{double $\ast$}]{y, }
+\item[{int}]{n, }
+\item[{double \&}]{A\+U\+C, }
+\item[{double \&}]{Accuracy}
+\end{DoxyParamCaption}
+)}}\label{classKOIL_a4e6ac3a53e7e5f9fd7ee2f741345e749}
+
+
+the calculate the A\+U\+C and Accuracy between f and y 
+
+
+\begin{DoxyParams}{Parameters}
+{\em f} & 1xn vector, the predicted label by the model \\
+\hline
+{\em y} & 1xn vector, the true label \\
+\hline
+{\em n} & the number of the label \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A\+U\+C A\+U\+C value 
+
+Accuracy Accuracy for the correct prediction 
+\end{DoxyReturn}
+\hypertarget{classKOIL_a40e819db98e708acff5c1ecb3e5dd2d6}{\index{K\+O\+I\+L@{K\+O\+I\+L}!fifo\+\_\+plus@{fifo\+\_\+plus}}
+\index{fifo\+\_\+plus@{fifo\+\_\+plus}!K\+O\+I\+L@{K\+O\+I\+L}}
+\subsubsection[{fifo\+\_\+plus}]{\setlength{\rightskip}{0pt plus 5cm}void K\+O\+I\+L\+::fifo\+\_\+plus (
+\begin{DoxyParamCaption}
+\item[{int $\ast$}]{id\+\_\+train, }
+\item[{int}]{cnt\+\_\+train, }
+\item[{int $\ast$}]{id\+\_\+test, }
+\item[{int}]{cnt\+\_\+test, }
+\item[{string}]{losstype, }
+\item[{{\bf svm\+\_\+model} \&}]{model, }
+\item[{double \&}]{A\+U\+C, }
+\item[{double \&}]{Accuracy, }
+\item[{double \&}]{time, }
+\item[{int \&}]{err\+\_\+count}
+\end{DoxyParamCaption}
+)}}\label{classKOIL_a40e819db98e708acff5c1ecb3e5dd2d6}
+
+
+K\+O\+I\+L\+\_\+\+F\+I\+F\+O++. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id\+\_\+train} & the index of the training samples \\
+\hline
+{\em cnt\+\_\+train} & the number of the training samples \\
+\hline
+{\em id\+\_\+test} & the index of the testing samples \\
+\hline
+{\em cnt\+\_\+test} & the number of the testing samples \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+model the learned decision function 
+
+A\+U\+C the A\+U\+C value on the testing samples 
+
+Accuracy the Accuracy on the testing samples 
+
+time the time used for training 
+
+err\+\_\+count the number of the misclassified samples online 
+\end{DoxyReturn}
+\hypertarget{classKOIL_a1dab877e7a27788b0c24ffdfdb91e8fe}{\index{K\+O\+I\+L@{K\+O\+I\+L}!fifo\+\_\+update\+\_\+budget@{fifo\+\_\+update\+\_\+budget}}
+\index{fifo\+\_\+update\+\_\+budget@{fifo\+\_\+update\+\_\+budget}!K\+O\+I\+L@{K\+O\+I\+L}}
+\subsubsection[{fifo\+\_\+update\+\_\+budget}]{\setlength{\rightskip}{0pt plus 5cm}void K\+O\+I\+L\+::fifo\+\_\+update\+\_\+budget (
+\begin{DoxyParamCaption}
+\item[{{\bf svm\+\_\+node} $\ast$}]{xt, }
+\item[{double}]{at, }
+\item[{int}]{max\+\_\+n, }
+\item[{{\bf svm\+\_\+model} \&}]{model, }
+\item[{int \&}]{fidx, }
+\item[{double $\ast$\&}]{alpha, }
+\item[{{\bf svm\+\_\+node} $\ast$$\ast$\&}]{S\+V, }
+\item[{int \&}]{cur\+\_\+n, }
+\item[{bool \&}]{flag, }
+\item[{int \&}]{ridx}
+\end{DoxyParamCaption}
+)}}\label{classKOIL_a1dab877e7a27788b0c24ffdfdb91e8fe}
+
+
+K\+O\+I\+L\+\_\+\+F\+I\+F\+O++\+: update budget. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em xt} & xt the t-\/th sample xt \\
+\hline
+{\em at} & the weight of xt \\
+\hline
+{\em max\+\_\+n} & the maximun number for the buffer \\
+\hline
+{\em model} & the current decision function f \\
+\hline
+{\em fidx} & the index of the first S\+V in the buffer (F\+I\+F\+O) \\
+\hline
+{\em alpha} & the weights of S\+Vs, which have the same label with xt \\
+\hline
+{\em S\+V} & the S\+V, which have the same label with xt \\
+\hline
+{\em cur\+\_\+n} & current number of S\+Vs in the buffer \\
+\hline
+{\em flag} & indicate whether xt is put in the buffer or not \\
+\hline
+{\em ridx} & the replaced index for xt if xt is put in the buffer \\
+\hline
+\end{DoxyParams}
+\hypertarget{classKOIL_a955e960acefa1e14bde3cfd966e09cee}{\index{K\+O\+I\+L@{K\+O\+I\+L}!rs\+\_\+plus@{rs\+\_\+plus}}
+\index{rs\+\_\+plus@{rs\+\_\+plus}!K\+O\+I\+L@{K\+O\+I\+L}}
+\subsubsection[{rs\+\_\+plus}]{\setlength{\rightskip}{0pt plus 5cm}void K\+O\+I\+L\+::rs\+\_\+plus (
+\begin{DoxyParamCaption}
+\item[{int $\ast$}]{id\+\_\+train, }
+\item[{int}]{cnt\+\_\+train, }
+\item[{int $\ast$}]{id\+\_\+test, }
+\item[{int}]{cnt\+\_\+test, }
+\item[{string}]{losstype, }
+\item[{{\bf svm\+\_\+model} \&}]{model, }
+\item[{double \&}]{A\+U\+C, }
+\item[{double \&}]{Accuracy, }
+\item[{double \&}]{time, }
+\item[{int \&}]{err\+\_\+count}
+\end{DoxyParamCaption}
+)}}\label{classKOIL_a955e960acefa1e14bde3cfd966e09cee}
+
+
+K\+O\+I\+L\+\_\+\+R\+S++. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id\+\_\+train} & the index of the training samples \\
+\hline
+{\em cnt\+\_\+train} & the number of the training samples \\
+\hline
+{\em id\+\_\+test} & the index of the testing samples \\
+\hline
+{\em cnt\+\_\+test} & the number of the testing samples \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+model the learned decision function 
+
+A\+U\+C the A\+U\+C value on the testing samples 
+
+Accuracy the Accuracy on the testing samples 
+
+time the time used for training 
+
+err\+\_\+count the number of the misclassified samples online 
+\end{DoxyReturn}
+\hypertarget{classKOIL_a5c3c0e58872e51846c7544ba2133848e}{\index{K\+O\+I\+L@{K\+O\+I\+L}!rs\+\_\+update\+\_\+budget@{rs\+\_\+update\+\_\+budget}}
+\index{rs\+\_\+update\+\_\+budget@{rs\+\_\+update\+\_\+budget}!K\+O\+I\+L@{K\+O\+I\+L}}
+\subsubsection[{rs\+\_\+update\+\_\+budget}]{\setlength{\rightskip}{0pt plus 5cm}void K\+O\+I\+L\+::rs\+\_\+update\+\_\+budget (
+\begin{DoxyParamCaption}
+\item[{{\bf svm\+\_\+node} $\ast$}]{xt, }
+\item[{double}]{at, }
+\item[{int}]{max\+\_\+n, }
+\item[{int}]{t, }
+\item[{{\bf svm\+\_\+model} \&}]{model, }
+\item[{double $\ast$\&}]{alpha, }
+\item[{{\bf svm\+\_\+node} $\ast$$\ast$\&}]{S\+V, }
+\item[{int \&}]{cur\+\_\+n, }
+\item[{bool \&}]{flag, }
+\item[{int \&}]{ridx}
+\end{DoxyParamCaption}
+)}}\label{classKOIL_a5c3c0e58872e51846c7544ba2133848e}
+
+
+K\+O\+I\+L\+\_\+\+R\+S++\+: update budget. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em xt} & xt the t-\/th sample xt \\
+\hline
+{\em at} & the weight of xt \\
+\hline
+{\em max\+\_\+n} & the maximun number for the buffer \\
+\hline
+{\em t} & the current iteration \\
+\hline
+{\em model} & the current decision function f \\
+\hline
+{\em alpha} & the weights of S\+Vs, which have the same label with xt \\
+\hline
+{\em S\+V} & the S\+V, which have the same label with xt \\
+\hline
+{\em cur\+\_\+n} & current number of S\+Vs in the buffer \\
+\hline
+{\em flag} & indicate whether xt is put in the buffer or not \\
+\hline
+{\em ridx} & the replaced index for xt if xt is put in the buffer \\
+\hline
+\end{DoxyParams}
+\hypertarget{classKOIL_ac831cd779181338f8528591de98a51d8}{\index{K\+O\+I\+L@{K\+O\+I\+L}!update\+\_\+b@{update\+\_\+b}}
+\index{update\+\_\+b@{update\+\_\+b}!K\+O\+I\+L@{K\+O\+I\+L}}
+\subsubsection[{update\+\_\+b}]{\setlength{\rightskip}{0pt plus 5cm}void K\+O\+I\+L\+::update\+\_\+b (
+\begin{DoxyParamCaption}
+\item[{{\bf svm\+\_\+model} \&}]{model}
+\end{DoxyParamCaption}
+)}}\label{classKOIL_ac831cd779181338f8528591de98a51d8}
+
+
+\hyperlink{classKOIL}{K\+O\+I\+L}\+: update threshold of decision function. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em model} & the current decision function \\
+\hline
+\end{DoxyParams}
+\hypertarget{classKOIL_ad266706c4c77b6dc50b963140530599a}{\index{K\+O\+I\+L@{K\+O\+I\+L}!update\+\_\+kernel@{update\+\_\+kernel}}
+\index{update\+\_\+kernel@{update\+\_\+kernel}!K\+O\+I\+L@{K\+O\+I\+L}}
+\subsubsection[{update\+\_\+kernel}]{\setlength{\rightskip}{0pt plus 5cm}void K\+O\+I\+L\+::update\+\_\+kernel (
+\begin{DoxyParamCaption}
+\item[{{\bf svm\+\_\+node} $\ast$}]{xt, }
+\item[{double}]{yt, }
+\item[{{\bf svm\+\_\+model} \&}]{model, }
+\item[{double \&}]{at}
+\end{DoxyParamCaption}
+)}}\label{classKOIL_ad266706c4c77b6dc50b963140530599a}
+
+
+update the weight for S\+V 
+
+
+\begin{DoxyParams}{Parameters}
+{\em xt} & the t-\/th sample xt \\
+\hline
+{\em yt} & the label of xt \\
+\hline
+{\em model} & the current decision function f \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+at return the weight of xt 
+\end{DoxyReturn}
+
+\begin{DoxyParams}{Parameters}
+{\em losstype} & indicate l1 or l2 loss, default = \char`\"{}l1\char`\"{}\\
+\hline
+{\em xt} & the t-\/th sample xt \\
+\hline
+{\em yt} & the label of xt \\
+\hline
+{\em model} & the current decision function f \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+at return the weight of xt 
+\end{DoxyReturn}
+\hypertarget{classKOIL_a2d964c4947718b25ac8a850dae8af32c}{\index{K\+O\+I\+L@{K\+O\+I\+L}!update\+\_\+kernel\+\_\+l2@{update\+\_\+kernel\+\_\+l2}}
+\index{update\+\_\+kernel\+\_\+l2@{update\+\_\+kernel\+\_\+l2}!K\+O\+I\+L@{K\+O\+I\+L}}
+\subsubsection[{update\+\_\+kernel\+\_\+l2}]{\setlength{\rightskip}{0pt plus 5cm}void K\+O\+I\+L\+::update\+\_\+kernel\+\_\+l2 (
+\begin{DoxyParamCaption}
+\item[{{\bf svm\+\_\+node} $\ast$}]{xt, }
+\item[{double}]{yt, }
+\item[{{\bf svm\+\_\+model} \&}]{model, }
+\item[{double \&}]{at}
+\end{DoxyParamCaption}
+)}}\label{classKOIL_a2d964c4947718b25ac8a850dae8af32c}
+
+
+update the weight for S\+V 
+
+update the weight for S\+V based on smooth pairwise hinge loss
+
+
+\begin{DoxyParams}{Parameters}
+{\em xt} & the t-\/th sample xt \\
+\hline
+{\em yt} & the label of xt \\
+\hline
+{\em model} & the current decision function f \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+at return the weight of xt 
+\end{DoxyReturn}
+
+\begin{DoxyParams}{Parameters}
+{\em losstype} & indicate l1 or l2 loss, default = \char`\"{}l1\char`\"{}\\
+\hline
+{\em xt} & the t-\/th sample xt \\
+\hline
+{\em yt} & the label of xt \\
+\hline
+{\em model} & the current decision function f \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+at return the weight of xt 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+K\+O\+I\+L.\+h\item 
+K\+O\+I\+L.\+cpp\end{DoxyCompactItemize}

@@ -1,0 +1,16 @@
+project(KOIL)
+#add_definitions(-std=c++0x -O3)
+add_definitions(-std=c++11 -g)
+cmake_minimum_required(VERSION 2.8)
+include_directories(/usr/local/include)
+link_directories(/usr/local/lib)
+
+#aux_source_directory(. SRC_LIST)
+add_executable(KOIL main.cpp utility.cpp svm.cpp KOIL.cpp)
+add_executable(CV cv.cpp utility.cpp svm.cpp KOIL.cpp)
+add_executable(CVP cv_plus.cpp utility.cpp svm.cpp KOIL.cpp)
+add_executable(online online.cpp utility.cpp svm.cpp KOIL.cpp)
+
+target_link_libraries(CV boost_system boost_thread)
+target_link_libraries(CVP boost_system boost_thread)
+target_link_libraries(online boost_system boost_thread)

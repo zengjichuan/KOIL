@@ -1,0 +1,90 @@
+\hypertarget{structsvm__model}{\section{svm\+\_\+model Struct Reference}
+\label{structsvm__model}\index{svm\+\_\+model@{svm\+\_\+model}}
+}
+
+
+S\+V\+M decision function.  
+
+
+
+
+{\ttfamily \#include $<$svm.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{structsvm__model_a8ab0be97d0f3cb8acd9be2e97bfad5f9}{void {\bfseries initialize} (int budget\+\_\+size)}\label{structsvm__model_a8ab0be97d0f3cb8acd9be2e97bfad5f9}
+
+\item 
+\hypertarget{structsvm__model_a3b999f2313adb3888919902aef7e70a3}{void {\bfseries free\+\_\+model} ()}\label{structsvm__model_a3b999f2313adb3888919902aef7e70a3}
+
+\item 
+\hypertarget{structsvm__model_aa4a5acf3ca9d54ce06398b12b0ca6fa9}{int {\bfseries load\+\_\+model} (string model\+\_\+file\+\_\+name)}\label{structsvm__model_aa4a5acf3ca9d54ce06398b12b0ca6fa9}
+
+\item 
+\hypertarget{structsvm__model_a290e8428f3fe33b3581306c63093a478}{int {\bfseries save\+\_\+model} (string model\+\_\+file\+\_\+name)}\label{structsvm__model_a290e8428f3fe33b3581306c63093a478}
+
+\item 
+\hypertarget{structsvm__model_af59045b69bc5d1056f523969c7326301}{double {\bfseries predict} (\hyperlink{structsvm__node}{svm\+\_\+node} $\ast$xt)}\label{structsvm__model_af59045b69bc5d1056f523969c7326301}
+
+\item 
+\hypertarget{structsvm__model_aa1480d3f501537dfd00d8a80f648b1e4}{double $\ast$ {\bfseries predict\+\_\+list} (\hyperlink{structsvm__node}{svm\+\_\+node} $\ast$$\ast$xt, int n)}\label{structsvm__model_aa1480d3f501537dfd00d8a80f648b1e4}
+
+\item 
+\hypertarget{structsvm__model_a0b97140c12fa296cecce356349639e60}{double {\bfseries kernel\+\_\+func} (\hyperlink{structsvm__node}{svm\+\_\+node} $\ast$x1, \hyperlink{structsvm__node}{svm\+\_\+node} $\ast$x2)}\label{structsvm__model_a0b97140c12fa296cecce356349639e60}
+
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{structsvm__model_a95f43f398a173e63d0ce26911d0a9273}{struct \hyperlink{structsvm__parameter}{svm\+\_\+parameter} {\bfseries param}}\label{structsvm__model_a95f43f398a173e63d0ce26911d0a9273}
+
+\item 
+\hypertarget{structsvm__model_ab858d7eed0bd3cc4c33c094872643d0a}{int {\bfseries l}}\label{structsvm__model_ab858d7eed0bd3cc4c33c094872643d0a}
+
+\item 
+\hypertarget{structsvm__model_ad762776269b721bce408999e99acc17b}{double {\bfseries b}}\label{structsvm__model_ad762776269b721bce408999e99acc17b}
+
+\item 
+\hypertarget{structsvm__model_ac434eca1d46561487d3cbdab2720248f}{int {\bfseries k\+\_\+num}}\label{structsvm__model_ac434eca1d46561487d3cbdab2720248f}
+
+\item 
+\hypertarget{structsvm__model_a1037643e5812269094866e2afe67f53f}{int {\bfseries fpidx}}\label{structsvm__model_a1037643e5812269094866e2afe67f53f}
+
+\item 
+\hypertarget{structsvm__model_a5739ce4e7c4db2023dbafbd0e97d9fec}{int {\bfseries fnidx}}\label{structsvm__model_a5739ce4e7c4db2023dbafbd0e97d9fec}
+
+\item 
+\hypertarget{structsvm__model_a9258f910c9909a83609dc11c73078487}{struct \hyperlink{structsvm__node}{svm\+\_\+node} $\ast$$\ast$ {\bfseries pos\+\_\+\+S\+V}}\label{structsvm__model_a9258f910c9909a83609dc11c73078487}
+
+\item 
+\hypertarget{structsvm__model_a6e93e1fb3be602bc79f146ac794a9795}{double $\ast$ {\bfseries pos\+\_\+alpha}}\label{structsvm__model_a6e93e1fb3be602bc79f146ac794a9795}
+
+\item 
+\hypertarget{structsvm__model_a97216aa9817d6fa0a76f45a4ffd746bf}{int {\bfseries pos\+\_\+n}}\label{structsvm__model_a97216aa9817d6fa0a76f45a4ffd746bf}
+
+\item 
+\hypertarget{structsvm__model_ab43b6c9afdf0ba1a7c87b7f1049e2c93}{int {\bfseries max\+\_\+pos\+\_\+n}}\label{structsvm__model_ab43b6c9afdf0ba1a7c87b7f1049e2c93}
+
+\item 
+\hypertarget{structsvm__model_a4ce40c17aa0e5b0ecf89c75e4295305f}{struct \hyperlink{structsvm__node}{svm\+\_\+node} $\ast$$\ast$ {\bfseries neg\+\_\+\+S\+V}}\label{structsvm__model_a4ce40c17aa0e5b0ecf89c75e4295305f}
+
+\item 
+\hypertarget{structsvm__model_a9c5d38de8b126bca8f4adf8b5add2e53}{double $\ast$ {\bfseries neg\+\_\+alpha}}\label{structsvm__model_a9c5d38de8b126bca8f4adf8b5add2e53}
+
+\item 
+\hypertarget{structsvm__model_a4edf82ef45dc8a1859547ab553bd142a}{int {\bfseries neg\+\_\+n}}\label{structsvm__model_a4edf82ef45dc8a1859547ab553bd142a}
+
+\item 
+\hypertarget{structsvm__model_ada63b0010ac5d785dd0ba19277ab2396}{int {\bfseries max\+\_\+neg\+\_\+n}}\label{structsvm__model_ada63b0010ac5d785dd0ba19277ab2396}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+S\+V\+M decision function. 
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+svm.\+h\item 
+svm.\+cpp\end{DoxyCompactItemize}
