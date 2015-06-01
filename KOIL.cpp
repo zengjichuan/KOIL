@@ -13,6 +13,7 @@
 #include <vector>
 #include <algorithm>
 #include <fstream>
+#include <random>
 #define debug 0
 #define debug_cv 0
 #define log 0
@@ -177,6 +178,167 @@ void KOIL::fifo_plus(int* id_train,int cnt_train, int* id_test, int cnt_test, st
     time = (end-start)*1.0/CLOCKS_PER_SEC;
 
     double* f_test = model.predict_list(x_test,cnt_test);
+    evaluate_AUC(f_test,y_test,cnt_test,AUC,Accuracy);
+
+    //free some arrays for memory
+    free(f_test);
+    free(y_test);
+    free(x_test);
+}
+
+//KOIL_RS++ with Multiple Kernels
+void KOIL::mkl_rs_plus(int* id_train,int cnt_train, int* id_test, int cnt_test, string losstype,
+                   svm_mkl& mkl,double& AUC,double& Accuracy, double& time, int& err_count)
+{
+    // calculate AUC and accuracy on test set
+    svm_node** x_test = Malloc(svm_node*,cnt_test);
+    double* y_test = Malloc(double,cnt_test);
+    for(int t=0;t<cnt_test;t++){
+        x_test[t] = prob.x[id_test[t]];
+        y_test[t] = prob.y[id_test[t]];
+    }
+
+    int ridx;
+    double at, max_weight;
+    clock_t start, end;
+    bool flag;
+
+    int test_cnt = 0;
+    start = clock();
+    err_count = 0;
+    for(int i = 0; i < mkl.classifiers.size(); i++){
+        mkl.classifiers[i].rsp = mkl.classifiers[i].rsn = 0;
+    }
+    std::default_random_engine generator;
+    // begin online training
+    for(int t=0;t<cnt_train;t++){
+        // get the xt and yt
+        svm_node* xt  = prob.x[id_train[t]];
+        double& yt    = prob.y[id_train[t]];
+
+        // predict xt
+        double ft=mkl.predict(xt);
+        if(ft*yt<=0)
+            err_count++;
+
+
+        max_weight = *std::max_element(mkl.weight.begin(),mkl.weight.end());
+        for(int i = 0; i < mkl.classifiers.size(); i++){
+            std::bernoulli_distribution distribution(mkl.weight[i]/max_weight);
+            if (distribution(generator)){
+                test_cnt ++;
+                if(yt==1){
+                   mkl.classifiers[i].rsp++;
+                   //update kernel
+                   if(losstype=="l1"){
+                       update_kernel(xt,yt,mkl.classifiers[i],at);
+                   }else update_kernel_l2(xt,yt,mkl.classifiers[i],at);
+
+                   //update budget
+                   rs_update_budget(xt,at,mkl.classifiers[i].max_pos_n,mkl.classifiers[i].rsp,
+                                    mkl.classifiers[i],mkl.classifiers[i].pos_alpha,
+                                    mkl.classifiers[i].pos_SV,mkl.classifiers[i].pos_n,flag,ridx);
+                }else{
+                    mkl.classifiers[i].rsn++;
+                    //update kernel
+                    if(losstype=="l1"){
+                        update_kernel(xt,yt,mkl.classifiers[i],at);
+                    }else update_kernel_l2(xt,yt,mkl.classifiers[i],at);
+
+                    //update budget
+                    rs_update_budget(xt,at,mkl.classifiers[i].max_neg_n,mkl.classifiers[i].rsn,
+                                       mkl.classifiers[i],mkl.classifiers[i].neg_alpha,
+                                       mkl.classifiers[i].neg_SV,mkl.classifiers[i].neg_n,flag,ridx);
+                }
+                update_b(mkl.classifiers[i]);
+                if(at!=0){
+                    mkl.weight[i] *=mkl.beta;
+                }
+            }
+        }
+        mkl.normalize_weight();
+    }
+    end = clock();
+    time = (end-start)*1.0/CLOCKS_PER_SEC;
+
+    cout<<test_cnt<<endl;
+    double* f_test = mkl.predict_list(x_test,cnt_test);
+    evaluate_AUC(f_test,y_test,cnt_test,AUC,Accuracy);
+
+    //free some arrays for memory
+    free(f_test);
+    free(y_test);
+    free(x_test);
+}
+
+//KOIL_FIFO++ with Multiple Kernels
+void KOIL::mkl_fifo_plus(int* id_train,int cnt_train, int* id_test, int cnt_test, string losstype,
+                   svm_mkl& mkl,double& AUC,double& Accuracy, double& time, int& err_count)
+{
+    // calculate AUC and accuracy on test set
+    svm_node** x_test = Malloc(svm_node*,cnt_test);
+    double* y_test = Malloc(double,cnt_test);
+    for(int t=0;t<cnt_test;t++){
+        x_test[t] = prob.x[id_test[t]];
+        y_test[t] = prob.y[id_test[t]];
+    }
+
+    int ridx;
+    double at, max_weight;
+    clock_t start, end;
+    bool flag;
+
+    start = clock();
+    err_count = 0;
+
+    std::default_random_engine generator;
+    for(int t=0;t<cnt_train;t++){
+        // get the xt and yt
+        svm_node* xt  = prob.x[id_train[t]];
+        double& yt    = prob.y[id_train[t]];
+
+        // predict xt
+        double ft=mkl.predict(xt);
+        if(ft*yt<=0)
+            err_count++;
+
+        max_weight = *std::max_element(mkl.weight.begin(),mkl.weight.end());
+        for(int i = 0; i < mkl.classifiers.size(); i++){
+            std::bernoulli_distribution distribution(mkl.weight[i]/max_weight);
+            if (distribution(generator)){
+                if(yt==1){
+                   //update kernel
+                   if(losstype=="l1"){
+                       update_kernel(xt,yt,mkl.classifiers[i],at);
+                   }else update_kernel_l2(xt,yt,mkl.classifiers[i],at);
+
+                   //update budget
+                   fifo_update_budget(xt,at,mkl.classifiers[i].max_pos_n,mkl.classifiers[i],
+                                      mkl.classifiers[i].fpidx,mkl.classifiers[i].pos_alpha,
+                                      mkl.classifiers[i].pos_SV,mkl.classifiers[i].pos_n,flag,ridx);
+                }else{
+                    //update kernel
+                    if(losstype=="l1"){
+                        update_kernel(xt,yt,mkl.classifiers[i],at);
+                    }else update_kernel_l2(xt,yt,mkl.classifiers[i],at);
+
+                    //update budget
+                    fifo_update_budget(xt,at,mkl.classifiers[i].max_neg_n,mkl.classifiers[i],
+                                       mkl.classifiers[i].fnidx,mkl.classifiers[i].neg_alpha,
+                                       mkl.classifiers[i].neg_SV,mkl.classifiers[i].neg_n,flag,ridx);
+                }
+                update_b(mkl.classifiers[i]);
+                if(at!=0){
+                    mkl.weight[i] *=mkl.beta;
+                }
+            }
+        }
+        mkl.normalize_weight();
+    }
+    end = clock();
+    time = (end-start)*1.0/CLOCKS_PER_SEC;
+
+    double* f_test = mkl.predict_list(x_test,cnt_test);
     evaluate_AUC(f_test,y_test,cnt_test,AUC,Accuracy);
 
     //free some arrays for memory
@@ -351,7 +513,7 @@ void KOIL::update_kernel_l2(svm_node* xt,double yt, svm_model& model, double& at
             continue;
         fb[i] = model.predict(oppo_sv[i]);
         if(1>yt*(ft-fb[i])){
-            loss.push_back(ft-fb[i]);
+            loss.push_back(1-yt*(ft-fb[i]));
             simpair.push_back(pair<double,int> (model.kernel_func(xt,oppo_sv[i]),i));
         }
     }
@@ -382,8 +544,15 @@ void KOIL::update_kernel_l2(svm_node* xt,double yt, svm_model& model, double& at
             if(simpair.size()<model.k_num){
                 at = 0;
                 for(int i=0;i<simpair.size();i++){
-                    at += (ft-fb[simpair[i].second])*model.param.C*model.param.eta*yt;
-                    oppo_alpha[simpair[i].second] -= model.param.C * model.param.eta * yt;
+                    //loss value
+                    double temp = 1-yt*(ft-fb[simpair[i].second]);
+                    if(temp<0){
+                        temp = 0;
+                    }else if(temp>model.project_bound){
+                        temp = model.project_bound;
+                    }
+                    at += 2*temp*model.param.C*model.param.eta*yt;
+                    oppo_alpha[simpair[i].second] -= 2*temp*model.param.C * model.param.eta * yt;
                 }
             }else{
                 at = 0;
@@ -394,8 +563,15 @@ void KOIL::update_kernel_l2(svm_node* xt,double yt, svm_model& model, double& at
                 }
 #endif
                 for(int i=0;i<model.k_num;i++){
-                    at += (ft-fb[simpair[i].second])*model.param.C*model.param.eta*yt;
-                    oppo_alpha[simpair[i].second] -= model.param.C * model.param.eta * yt;
+                    //loss value
+                    double temp = 1-yt*(ft-fb[simpair[i].second]);
+                    if(temp<0){
+                        temp = 0;
+                    }else if(temp>model.project_bound){
+                        temp = model.project_bound;
+                    }
+                    at += 2*temp*model.param.C*model.param.eta*yt;
+                    oppo_alpha[simpair[i].second] -= 2*temp*model.param.C * model.param.eta * yt;
                 }
             }
         }
@@ -522,6 +698,70 @@ void KOIL::fifo_update_budget(svm_node* xt,double at,int max_n,
         alpha[cidx] += ac;
     }
 }
+/*
+void KOIL::fifo_update_budget(svm_node* xt,double at,int max_n,
+                              svm_model& model,int& fidx,double* &alpha,svm_node** &SV,int& cur_n,bool& flag, int& ridx)
+{
+    // variable initialization
+    int max_n, cur_n;
+    double* alpha;
+    svm_node** SV;
+
+    ridx = -1;
+    flag = false;
+    double ac = 0;
+    svm_node* svc = NULL;
+
+    if(at==0)
+        return;
+    if(at>0){
+        max_n = model.max_pos_n;
+        fidx = model.fpidx;
+        alpha = model.pos_alpha;
+        SV = model.pos_SV;
+        cur_n = model.pos_n;
+    }else{
+        max_n = model.max_neg_n;
+        fidx = model.fnidx;
+        alpha = model.neg_alpha;
+        SV = model.neg_SV;
+        cur_n = model.neg_n;
+    }
+
+    if(cur_n<max_n)
+    {
+            alpha[cur_n] = at;
+            SV[cur_n] = xt;
+            flag = true;
+            //cur_n ++;
+            if(at>0)
+                model.pos_n++;
+            else model.neg_n++;
+    }else{
+        // replace the first SV in the buffer by fpidx and fnidx
+        ac = alpha[fidx];
+        svc = SV[fidx];
+        alpha[fidx] = at;
+        SV[fidx] = xt;
+        flag = true;
+        ridx = fidx;
+        fidx = (fidx+1) % max_n;
+
+        // find the most similar SV for compensation
+        int cidx = 0;
+        double ma = 0;
+        for(int i=0;i<max_n;i++){
+            double temp = model.kernel_func(svc,SV[i]);
+            if(temp>ma){
+                cidx = i;
+                ma = temp;
+            }
+        }
+//        cout<<"The maximun sim: "<<ma<<" , idx: "<<cidx<<endl;
+        alpha[cidx] += ac;
+    }
+}
+*/
 
 /**
  * @brief KOIL: update threshold of decision function

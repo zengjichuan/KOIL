@@ -1,6 +1,13 @@
+/**
+ * @brief Kernelized Online Imbalanced Learning with Fixed Buddget
+ * Implemented by Junjie Hu
+ * Contact: jjhu@cse.cuhk.edu.hk
+*/
+
 #ifndef _KOIL_H
 #define _KOIL_H
 #include <string>
+#include <vector>
 #include "svm.h"
 using namespace std;
 
@@ -83,6 +90,39 @@ public:
     void fifo_plus(int* id_train,int cnt_train, int* id_test, int cnt_test, string losstype,
                    svm_model& model,double& AUC,double& Accuracy, double& time, int& err_count);
 
+    /**
+     * @brief KOIL_MKL_FIFO++
+     *
+     * @param id_train the index of the training samples
+     * @param cnt_train the number of the training samples
+     * @param id_test the index of the testing samples
+     * @param cnt_test the number of the testing samples
+     * @return model multiple kernels for the learned decision function
+     * @return AUC the AUC value on the testing samples
+     * @return Accuracy the Accuracy on the testing samples
+     * @return time the time used for training
+     * @return err_count the number of the misclassified samples online
+     */
+    void mkl_fifo_plus(int* id_train,int cnt_train, int* id_test, int cnt_test, string losstype,
+                       svm_mkl &model,double& AUC,double& Accuracy, double& time, int& err_count);
+
+    /**
+     * @brief KOIL_MKL_RS++
+     *
+     * @param id_train the index of the training samples
+     * @param cnt_train the number of the training samples
+     * @param id_test the index of the testing samples
+     * @param cnt_test the number of the testing samples
+     * @return model multiple kernels for the learned decision function
+     * @return AUC the AUC value on the testing samples
+     * @return Accuracy the Accuracy on the testing samples
+     * @return time the time used for training
+     * @return err_count the number of the misclassified samples online
+     */
+    void mkl_rs_plus(int* id_train,int cnt_train, int* id_test, int cnt_test, string losstype,
+                       svm_mkl &model,double& AUC,double& Accuracy, double& time, int& err_count);
+
+
     // helper functions
     /**
      * @brief KOIL_RS++: update budget
@@ -158,6 +198,8 @@ public:
      */
     void evaluate_AUC(double* f, double* y, int n,
                       double& AUC, double& Accuracy);
+
+
 };
 
 #endif

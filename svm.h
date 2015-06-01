@@ -7,6 +7,7 @@
 #ifndef _SVM_H
 #define _SVM_H
 #include <string>
+#include <vector>
 using namespace std;
 
 
@@ -95,6 +96,9 @@ struct svm_model
     int k_num;                  // number of k nearest neighbors
     int fpidx;                  // first index in the positive SV list for FIFO++
     int fnidx;                  // first index in the negative SV list for FIFO++
+    int rsp;                    // number of scanned positive samples for RS++
+    int rsn;                    // number of scanned negative samples for RS++
+    double project_bound;       // project bound for the alpha
 	
 	// positive SV
 	struct svm_node ** pos_SV;  // pos_SV: pos_SV[i][j]: the j-th feature of the i-th positive SV
@@ -117,6 +121,34 @@ struct svm_model
     double predict(svm_node* xt);
     double* predict_list(svm_node** xt, int n);
     double kernel_func(svm_node* x1, svm_node* x2);
+};
+
+/**
+ * @brief SVM with Multiple Kernels decision function
+ *
+ */
+struct svm_mkl{
+    svm_mkl(){
+        /*
+        vector<double> glist;
+        glist.push_back(2.0);
+        this->initialize(100,0.6,4,glist);
+        */
+    }
+
+    svm_mkl(int budget_size, double beta, double C, vector<double> glist){
+        this->initialize(budget_size,beta,C,glist);
+    }
+
+    vector<svm_model> classifiers;
+    vector<double> weight;
+    double beta;
+
+    //member function
+    void initialize(int budget_size, double beta, double C, vector<double> glist);
+    double predict(svm_node* xt);
+    double* predict_list(svm_node** xt, int n);
+    void normalize_weight();
 };
 
 double dot(svm_node* a,svm_node*b);

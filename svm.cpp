@@ -41,6 +41,9 @@ void svm_model::initialize(int budget_size)
     b = 0;
     fpidx = 0;
     fnidx = 0;
+    rsp = 0;
+    rsn = 0;
+    project_bound = 1000000;
 }
 
 // free the svm model
@@ -246,7 +249,7 @@ double svm_model::predict(svm_node* xt)
     return probability;
 }
 
-// predict the label for one node
+// predict the label for a list of samples
 double* svm_model::predict_list(svm_node** xt, int n)
 {
     double* plist = Malloc(double,n);
@@ -303,6 +306,58 @@ double svm_model::kernel_func(svm_node* a, svm_node* b)
     }
 }
 
+/****************************************
+ * svm_model: save and load svm_model
+ * **************************************/
+// initialize the SVM with multiple kernels
+void svm_mkl::initialize(int budget_size, double beta, double C, vector<double> glist)
+{
+    this->beta = beta;
+    for(int i = 0; i < glist.size(); i++){
+        svm_model classifier;
+        classifier.initialize(budget_size);
+        classifier.param.C = C;
+        classifier.param.gamma = glist[i];
+        this->classifiers.push_back(classifier);
+        this->weight.push_back(1);
+    }
+}
+
+void svm_mkl::normalize_weight()
+{
+    double sum = 0;
+    for(int i = 0; i < this->weight.size(); i++){
+        sum += this->weight[i];
+    }
+    for(int i = 0; i < this->weight.size(); i++){
+        this->weight[i] /= sum;
+    }
+}
+
+// predict the label for one node
+double svm_mkl::predict(svm_node *xt)
+{
+    double label = 0;
+    for(int j = 0; j < this->classifiers.size(); j++){
+        label += this->weight[j]*this->classifiers[j].predict(xt);
+//        if(this->classifiers[j].predict(xt)>0){
+//            label += this->weight[j];
+//        }else{
+//            label -= this->weight[j];
+//        }
+    }
+    return label;
+}
+
+// predict a list of samples
+double* svm_mkl::predict_list(svm_node **xt, int n)
+{
+    double* plist = Malloc(double,n);
+    for(int i = 0; i < n; i++){
+        plist[i] = this->predict(xt[i]);
+    }
+    return plist;
+}
 
 /****************************************
  * svm_problem:
