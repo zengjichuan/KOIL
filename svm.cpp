@@ -301,18 +301,37 @@ double svm_model::kernel_func(svm_node* a, svm_node* b)
     }
     case POLY:
     {
-
+        double ans = 1;
+        double temp = dot(a,b);
+        for(int i = 0; i < param.degree; i++){
+            ans *= temp;
+        }
+        return ans;
     }
     }
 }
 
+double svm_model::f_norm()
+{
+    double result = 0;
+    for(int i=0; i<this->pos_n; i++){
+        result += this->pos_alpha[i] * std::sqrt(kernel_func(this->pos_SV[i],this->pos_SV[i]));
+    }
+    for(int i=0; i<this->neg_n; i++){
+        result += (-1*this->neg_alpha[i]) * std::sqrt(kernel_func(this->neg_SV[i],this->neg_SV[i]));
+    }
+    return result;
+}
+
 /****************************************
- * svm_model: save and load svm_model
+ * svm_mkl: utility functions of svm_mkl
  * **************************************/
 // initialize the SVM with multiple kernels
-void svm_mkl::initialize(int budget_size, double beta, double C, vector<double> glist)
+void svm_mkl::initialize(int budget_size, double delta, double C, vector<double> glist)
 {
-    this->beta = beta;
+    this->eta = 0.01;
+    this->lambda = 0.01;
+    this->delta = delta;
     for(int i = 0; i < glist.size(); i++){
         svm_model classifier;
         classifier.initialize(budget_size);
@@ -320,7 +339,25 @@ void svm_mkl::initialize(int budget_size, double beta, double C, vector<double> 
         classifier.param.gamma = glist[i];
         this->classifiers.push_back(classifier);
         this->weight.push_back(1);
+        this->p.push_back(1.0/glist.size());
     }
+}
+
+void svm_mkl::initialize(int budget_size, double delta, double C, vector<double> glist, vector<int>degreelist)
+{
+    this->initialize(budget_size, delta, C,glist);
+    for(int i = 0; i < degreelist.size(); i++){
+        svm_model classifier;
+        classifier.initialize(budget_size);
+        classifier.param.C = C;
+        classifier.param.degree = degreelist[i];
+        classifier.param.kernel_type = POLY;
+        this->classifiers.push_back(classifier);
+        this->weight.push_back(1);
+    }
+    this->p.clear();
+    for(int i = 0; i < this->classifiers.size(); i++)
+        this->p.push_back(1.0/this->classifiers.size());
 }
 
 void svm_mkl::normalize_weight()
@@ -331,6 +368,12 @@ void svm_mkl::normalize_weight()
     }
     for(int i = 0; i < this->weight.size(); i++){
         this->weight[i] /= sum;
+    }
+}
+void svm_mkl::smooth_propbability()
+{
+    for(int i = 0; i < this->p.size(); i++){
+        this->p[i] = (1-this->delta)*this->weight[i] + this->delta/this->p.size();
     }
 }
 

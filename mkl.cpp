@@ -19,9 +19,10 @@ using std::endl;
 using boost::mutex;
 using std::pow;
 
-double beta;
+double delta;
 double C;
 vector<double> glist;
+vector<int> degreelist;
 string losstype;
 
 void online_mkl(KOIL& koil)
@@ -36,7 +37,7 @@ void online_mkl(KOIL& koil)
     {
         //2. KOIL_MKL_FIFO++
         svm_mkl mkl_fifo_model;
-        mkl_fifo_model.initialize(100,beta,C,glist);
+        mkl_fifo_model.initialize(100,delta,C,glist,degreelist);
 
         koil.mkl_fifo_plus(id_train, n_train, id_test, n_test, losstype, mkl_fifo_model,
                   fifo_result.auc[k-1],fifo_result.accuracy[k-1],
@@ -45,7 +46,7 @@ void online_mkl(KOIL& koil)
         cout<<"accuracy="<<fifo_result.accuracy[k-1]<<endl;
 
         //1. KOIL_MKL_RS++
-        svm_mkl mkl_rs_model(100,beta,C,glist);
+        svm_mkl mkl_rs_model(100,delta,C,glist,degreelist);
         //mkl_rs_model.initialize(100,beta,C,glist);
 
         koil.mkl_rs_plus(id_train, n_train, id_test, n_test, losstype, mkl_rs_model,
@@ -58,12 +59,12 @@ void online_mkl(KOIL& koil)
     };
 
     std::vector<boost::shared_ptr<boost::thread>> thread_pool(20);
-    for(int i=1;i<=4;i++){
-    //for(int i=1;i<=1;i++){
+    //for(int i=1;i<=4;i++){
+    for(int i=1;i<=1;i++){
         //int* & indice = prob.idx_cv[:,i-1];
         int head = 0;
-        for(int j=1;j<=5;j++){
-        //for(int j=1;j<=1;j++){
+        //for(int j=1;j<=5;j++){
+        for(int j=1;j<=1;j++){
             int k=5*(i-1)+j;
             cout<<"The"<<k<<"-th trial"<<endl;
 
@@ -104,8 +105,8 @@ void online_mkl(KOIL& koil)
     }
 
     //wait
-    for(int i = 0; i < thread_pool.size(); i++)
-    //for(int i = 0; i < 1; i++)
+    //for(int i = 0; i < thread_pool.size(); i++)
+    for(int i = 0; i < 1; i++)
     {
         thread_pool[i]->join();
     }
@@ -118,7 +119,7 @@ int main(int argc, char **argv)
 {
     if(argc < 6)
     {
-        cout<<"Argument format : "<<argv[0]<<"<dataset_file> <loss type> <Beta><C> <gamma list> "<<endl;
+        cout<<"Argument format : "<<argv[0]<<"<dataset_file> <loss type> <delta> <C> <degree num> <degree list>  <gamma list>"<<endl;
         return 0;
     }
 
@@ -126,9 +127,13 @@ int main(int argc, char **argv)
     // load data
     koil.dataset_file = string(argv[1]);
     losstype = string(argv[2]);
-    beta = atof(argv[3]);
+    delta = atof(argv[3]);
     C = atof(argv[4]);
-    for(int i = 5; i < argc; i++){
+    int degree_num = atoi(argv[5]);
+    for(int i = 6; i < 6+degree_num; i++){
+        degreelist.push_back(atoi(argv[i]));
+    }
+    for(int i = 6+degree_num; i < argc; i++){
         glist.push_back(atof(argv[i]));
     }
 

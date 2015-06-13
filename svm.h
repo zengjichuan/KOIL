@@ -72,12 +72,12 @@ struct svm_parameter {
 
     svm_parameter():C(1),kernel_type(RBF),degree(2),gamma(1),eta(0.01){}
 
-	double C;    /* penalty parameter of the objective function*/
-	int kernel_type;
-	int degree;	/* for poly */
-	double gamma;	/* for poly/rbf/sigmoid */
-	//double coef0;	/* for poly/sigmoid */
-    double eta;  /* learning rate */
+    double C;        /* penalty parameter of the objective function*/
+    int kernel_type; /* kernel type: LINEAR, RBF, POLY */
+    int degree;	     /* for poly */
+    double gamma;	 /* for poly/rbf/sigmoid */
+    //double coef0;  /* for poly/sigmoid */
+    double eta;      /* learning rate for KOIL*/
 };
 
 
@@ -121,6 +121,7 @@ struct svm_model
     double predict(svm_node* xt);
     double* predict_list(svm_node** xt, int n);
     double kernel_func(svm_node* x1, svm_node* x2);
+    double f_norm();
 };
 
 /**
@@ -128,27 +129,30 @@ struct svm_model
  *
  */
 struct svm_mkl{
-    svm_mkl(){
-        /*
-        vector<double> glist;
-        glist.push_back(2.0);
-        this->initialize(100,0.6,4,glist);
-        */
+    svm_mkl(){}
+
+    svm_mkl(int budget_size, double delta, double C, vector<double> glist){
+        this->initialize(budget_size,delta,C,glist);
     }
 
-    svm_mkl(int budget_size, double beta, double C, vector<double> glist){
-        this->initialize(budget_size,beta,C,glist);
+    svm_mkl(int budget_size, double delta, double C, vector<double> glist, vector<int> degreelist){
+        this->initialize(budget_size,delta,C,glist,degreelist);
     }
 
     vector<svm_model> classifiers;
     vector<double> weight;
-    double beta;
+    vector<double> p;
+    double delta;    /* smooth term */
+    double lambda;   /* learning rate for each kernel of MKL */
+    double eta;      /* step size for the update of kernel weight */
 
     //member function
-    void initialize(int budget_size, double beta, double C, vector<double> glist);
+    void initialize(int budget_size, double delta, double C, vector<double> glist);
+    void initialize(int budget_size, double delta, double C, vector<double> glist, vector<int> degreelist);
     double predict(svm_node* xt);
     double* predict_list(svm_node** xt, int n);
     void normalize_weight();
+    void smooth_propbability();
 };
 
 double dot(svm_node* a,svm_node*b);

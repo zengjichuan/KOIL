@@ -122,6 +122,37 @@ public:
     void mkl_rs_plus(int* id_train,int cnt_train, int* id_test, int cnt_test, string losstype,
                        svm_mkl &model,double& AUC,double& Accuracy, double& time, int& err_count);
 
+    /**
+     * @brief KOIL_MKL_FIFO++
+     *
+     * @param id_train the index of the training samples
+     * @param cnt_train the number of the training samples
+     * @param id_test the index of the testing samples
+     * @param cnt_test the number of the testing samples
+     * @return model multiple kernels for the learned decision function
+     * @return AUC the AUC value on the testing samples
+     * @return Accuracy the Accuracy on the testing samples
+     * @return time the time used for training
+     * @return err_count the number of the misclassified samples online
+     */
+    void mkl_fifo_plus_m(int* id_train,int cnt_train, int* id_test, int cnt_test, string losstype,
+                       svm_mkl &model,double& AUC,double& Accuracy, double& time, int& err_count);
+
+    /**
+     * @brief KOIL_MKL_RS++
+     *
+     * @param id_train the index of the training samples
+     * @param cnt_train the number of the training samples
+     * @param id_test the index of the testing samples
+     * @param cnt_test the number of the testing samples
+     * @return model multiple kernels for the learned decision function
+     * @return AUC the AUC value on the testing samples
+     * @return Accuracy the Accuracy on the testing samples
+     * @return time the time used for training
+     * @return err_count the number of the misclassified samples online
+     */
+    void mkl_rs_plus_m(int* id_train,int cnt_train, int* id_test, int cnt_test, string losstype,
+                       svm_mkl &model,double& AUC,double& Accuracy, double& time, int& err_count);
 
     // helper functions
     /**
@@ -172,9 +203,10 @@ public:
      * @param yt the label of xt
      * @param model the current decision function f
      * @return at return the weight of xt
+     * @return ploss pairwise loss value
      * @param losstype indicate l1 or l2 loss, default = "l1"
      */
-    void update_kernel(svm_node* xt,double yt, svm_model& model, double& at);
+    void update_kernel(svm_node* xt,double yt, svm_model& model, double& at, double& ploss);
 
     /**
      * @brief update the weight for SV
@@ -183,9 +215,10 @@ public:
      * @param yt the label of xt
      * @param model the current decision function f
      * @return at return the weight of xt
+     * @return ploss pairwise loss value
      * @param losstype indicate l1 or l2 loss, default = "l1"
      */
-    void update_kernel_l2(svm_node* xt,double yt, svm_model& model, double& at);
+    void update_kernel_l2(svm_node* xt,double yt, svm_model& model, double& at, double& ploss);
 
     /**
      * @brief the calculate the AUC and Accuracy between f and y
