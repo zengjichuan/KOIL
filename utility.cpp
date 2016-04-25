@@ -36,6 +36,7 @@ char* readline(FILE *input)
 	return line;
 }
 
+
 void read_matrix(string filename,int** &mat, int &n, int &d)
 {
 	unsigned int max_index, inst_max_index, i, j;

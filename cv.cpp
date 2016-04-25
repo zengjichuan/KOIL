@@ -22,13 +22,14 @@ using boost::mutex;
 using std::pow;
 
 boost::mutex brs_auc_mutex;
+boost::mutex brs_acc_mutex;
 boost::mutex best_c_mutex;
-boost::mutex best_g_mutex;
+boost::mutex best_eta_mutex;
 boost::mutex file_mutex;
 
-int cnum, gnum;
-int cstart, gstart;
-int cstep, gstep;
+int cnum, etanum;
+int cstart, etastart;
+int cstep, etastep;
 int cvfold;
 string losstype;
 
@@ -39,26 +40,27 @@ void parallel_cross_validation(KOIL& koil, int*& id_x, double*& y, int*& idx_j, 
     // the test list for C and gamma
     //int cnum = 10, gnum = 10;
     cout<<"cnum"<<cnum<<endl;
-    cout<<"gnum"<<gnum<<endl;
+    cout<<"gnum"<<etanum<<endl;
 //    cstep = 2;
 //    gstep = 4;
     double* clist = Malloc(double,cnum);
-    double* glist = Malloc(double,gnum);
+    double* glist = Malloc(double,etanum);
     double** auc_record=Malloc(double*,cnum);
     double** acc_record=Malloc(double*,cnum);
     for(int i=0;i<cnum;i++){
-        auc_record[i] = Malloc(double,gnum);
-        acc_record[i] = Malloc(double,gnum);
+        auc_record[i] = Malloc(double,etanum);
+        acc_record[i] = Malloc(double,etanum);
     }
 
     clist[0] = pow(2,cstart);
-    glist[0] = pow(2,gstart);
+    glist[0] = pow(2,etastart);
     for(int i=1;i<cnum;clist[i] = clist[i-1]*cstep,i++);
-    for(int j=1;j<gnum;glist[j] = glist[j-1]*gstep,j++);
+    for(int j=1;j<etanum;glist[j] = glist[j-1]*etastep,j++);
 
     double best_rs_C, best_fifo_C, best_rs_gamma, best_fifo_gamma;
     best_rs_C = best_fifo_C = best_rs_gamma = best_fifo_gamma = 0;
     double brs_auc = 0;
+    double brs_acc = 0;
     double rs_time;
     int rs_err_cnt;
 
@@ -66,6 +68,8 @@ void parallel_cross_validation(KOIL& koil, int*& id_x, double*& y, int*& idx_j, 
     {
         double AUC_RS[]={0,0,0,0,0};
         double Acc_RS[]={0,0,0,0,0};
+        double Pre_RS[]={0,0,0,0,0};
+        double Rec_RS[]={0,0,0,0,0};
         // Five fold cross-validation
         for(int fold=1;fold<=cvfold;fold++){
             cout<<"Fold:"<<fold<<endl;
@@ -102,7 +106,7 @@ void parallel_cross_validation(KOIL& koil, int*& id_x, double*& y, int*& idx_j, 
             rs.param.gamma=glist[g_index];
             koil.rs_plus(id_train, n_train, id_test, n_test, losstype,
                     rs,
-                    AUC_RS[fold-1],Acc_RS[fold-1],
+                    AUC_RS[fold-1],Acc_RS[fold-1],Pre_RS[fold-1],Rec_RS[fold-1],
                     rs_time,rs_err_cnt);
 
             //2. KOIL_FIFO++
@@ -120,27 +124,31 @@ void parallel_cross_validation(KOIL& koil, int*& id_x, double*& y, int*& idx_j, 
         cout<<"Avg Acc = "<<acc_record[c_index][g_index]<<endl;
 
         brs_auc_mutex.lock();
+        brs_acc_mutex.lock();
         best_c_mutex.lock();
-        best_g_mutex.lock();
-        if(brs_auc<auc_record[c_index][g_index]){
-            brs_auc = auc_record[c_index][g_index];
+        best_eta_mutex.lock();
+        if(brs_acc<acc_record[c_index][g_index]){
+            brs_acc = acc_record[c_index][g_index];
+//        if(brs_auc<auc_record[c_index][g_index]){
+//            brs_auc = auc_record[c_index][g_index];
             best_rs_C = clist[c_index];
             best_rs_gamma = glist[g_index];
         }
         brs_auc_mutex.unlock();
+        brs_acc_mutex.unlock();
         best_c_mutex.unlock();
-        best_g_mutex.unlock();
+        best_eta_mutex.unlock();
     };
 
-    std::vector<boost::shared_ptr<boost::thread>> thread_pool(cnum*gnum);
+    std::vector<boost::shared_ptr<boost::thread>> thread_pool(cnum*etanum);
     // loop through clist and glist
     for(int i=0;i<cnum;i++)
     {
         cout<<"CV: C="<<clist[i]<<endl;
-        for(int j=0;j<gnum;j++)
+        for(int j=0;j<etanum;j++)
         {
             cout<<"CV: gamma="<<glist[j]<<endl;
-            thread_pool[i * gnum + j].reset(new boost::thread(run_function, i, j));
+            thread_pool[i * etanum + j].reset(new boost::thread(run_function, i, j));
         }
     }
     //wait
@@ -152,11 +160,12 @@ void parallel_cross_validation(KOIL& koil, int*& id_x, double*& y, int*& idx_j, 
     fifo_model.param.C = rs_model.param.C = best_rs_C;
     fifo_model.param.gamma = rs_model.param.gamma = best_rs_gamma;
 
-    write_matrix(auc_record,cnum,gnum,"result/"+koil.dataset_file+"_cv_AUC.txt");
-    write_matrix(acc_record,cnum,gnum,"result/"+koil.dataset_file+"_cv_Acc.txt");
+    write_matrix(auc_record,cnum,etanum,"result/"+koil.dataset_file+"_cv_AUC.txt");
+    write_matrix(acc_record,cnum,etanum,"result/"+koil.dataset_file+"_cv_Acc.txt");
 
     std::ofstream of("result/"+koil.dataset_file+"_cv.txt",ios::app);
     of<<"The best AUC = "<<brs_auc<<endl;
+    of<<"The best Acc = "<<brs_acc<<endl;
     of<<"The best C = "<<best_rs_C<<endl;
     of<<"The best gamma = "<<best_rs_gamma<<endl;
     of.close();
@@ -178,7 +187,7 @@ void parallel_cross_validation(KOIL& koil, int*& id_x, double*& y, int*& idx_j, 
 
     std::ofstream ofa("result/"+koil.dataset_file+"_cv_pair.txt",ios::app);
     for(int i=0;i<cnum;i++){
-    for(int j=0;j<gnum;j++){
+    for(int j=0;j<etanum;j++){
         ofa<<clist[i]<<"\t"<<glist[j]<<"\t"<<auc_record[i][j]<<"\t"<<acc_record[i][j]<<endl;
     }
     }
@@ -200,11 +209,11 @@ int main(int argc, char **argv)
     // load data
     koil.dataset_file = string(argv[1]);
     cnum = atoi(argv[2]);
-    gnum = atoi(argv[3]);
+    etanum = atoi(argv[3]);
     cstart = atoi(argv[4]);
-    gstart = atoi(argv[5]);
+    etastart = atoi(argv[5]);
     cstep = atoi(argv[6]);
-    gstep = atoi(argv[7]);
+    etastep = atoi(argv[7]);
     cvfold = atoi(argv[8]);
     losstype = string(argv[9]);
     cout<<"cvfold"<<cvfold<<endl;

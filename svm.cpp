@@ -309,6 +309,7 @@ double svm_model::kernel_func(svm_node* a, svm_node* b)
         return ans;
     }
     }
+
 }
 
 double svm_model::f_norm()
@@ -372,8 +373,10 @@ void svm_mkl::normalize_weight()
 }
 void svm_mkl::smooth_propbability()
 {
+    double sum = 0;
+    for(int i = 0; i < this->weight.size(); i++) sum+= this->weight[i];
     for(int i = 0; i < this->p.size(); i++){
-        this->p[i] = (1-this->delta)*this->weight[i] + this->delta/this->p.size();
+        this->p[i] = (1-this->delta)*this->weight[i]/sum + this->delta/this->p.size();
     }
 }
 

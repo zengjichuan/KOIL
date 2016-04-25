@@ -39,23 +39,42 @@ void online_mkl(KOIL& koil)
         svm_mkl mkl_fifo_model;
         mkl_fifo_model.initialize(100,delta,C,glist,degreelist);
 
-        koil.mkl_fifo_plus(id_train, n_train, id_test, n_test, losstype, mkl_fifo_model,
+        koil.mkl_fifo_plus_m3(id_train, n_train, id_test, n_test, losstype, mkl_fifo_model,
                   fifo_result.auc[k-1],fifo_result.accuracy[k-1],
                 fifo_result.time[k-1],fifo_result.err_cnt[k-1]);
         cout<<"FIFO++"<<endl<<"auc="<<fifo_result.auc[k-1]<<endl;
         cout<<"accuracy="<<fifo_result.accuracy[k-1]<<endl;
+        double best_fifo = 0;
+        int best_idx = 0;
+        for(int t=0;t<mkl_fifo_model.weight.size();t++){
+            if(best_fifo<mkl_fifo_model.weight[t]){
+                best_fifo = mkl_fifo_model.weight[t];
+                best_idx = t;
+            }
+        }
+        svm_model& model = mkl_fifo_model.classifiers[best_idx];
+        cout<<"FIFO++ best kernel type:"<<model.param.kernel_type<<",degree="<<model.param.degree<<",gamma="<<model.param.gamma<<endl;
 
         //1. KOIL_MKL_RS++
         svm_mkl mkl_rs_model(100,delta,C,glist,degreelist);
         //mkl_rs_model.initialize(100,beta,C,glist);
 
-        koil.mkl_rs_plus(id_train, n_train, id_test, n_test, losstype, mkl_rs_model,
+        koil.mkl_rs_plus_m3(id_train, n_train, id_test, n_test, losstype, mkl_rs_model,
                 rs_result.auc[k-1],rs_result.accuracy[k-1],
                 rs_result.time[k-1],rs_result.err_cnt[k-1]);
         cout<<"RS++"<<endl<<"auc="<<rs_result.auc[k-1]<<endl;
         cout<<"accuracy="<<rs_result.accuracy[k-1]<<endl;
 
-
+        double best_rs = 0;
+        best_idx = 0;
+        for(int t=0;t<mkl_rs_model.weight.size();t++){
+            if(best_rs<mkl_rs_model.weight[t]){
+                best_rs = mkl_rs_model.weight[t];
+                best_idx = t;
+            }
+        }
+        svm_model& rmodel = mkl_rs_model.classifiers[best_idx];
+        cout<<"RS++ best kernel type:"<<rmodel.param.kernel_type<<",degree="<<rmodel.param.degree<<",gamma="<<rmodel.param.gamma<<endl;
     };
 
     std::vector<boost::shared_ptr<boost::thread>> thread_pool(20);
@@ -64,7 +83,7 @@ void online_mkl(KOIL& koil)
         //int* & indice = prob.idx_cv[:,i-1];
         int head = 0;
         //for(int j=1;j<=5;j++){
-        for(int j=1;j<=1;j++){
+        for(int j=4;j<=4;j++){
             int k=5*(i-1)+j;
             cout<<"The"<<k<<"-th trial"<<endl;
 
@@ -106,7 +125,7 @@ void online_mkl(KOIL& koil)
 
     //wait
     //for(int i = 0; i < thread_pool.size(); i++)
-    for(int i = 0; i < 1; i++)
+    for(int i = 3; i < 4; i++)
     {
         thread_pool[i]->join();
     }
@@ -138,7 +157,7 @@ int main(int argc, char **argv)
     }
 
 
-    koil.load_data_path = "dataset/";
+    koil.load_data_path = "./dataset/";
 
     koil.idx_asso_file = koil.dataset_file+"_IdxAsso";
     koil.idx_cv_file = koil.dataset_file+"_IdxCv";
@@ -148,7 +167,7 @@ int main(int argc, char **argv)
     prob.load_cross_validation(koil.load_data_path+koil.idx_asso_file,koil.load_data_path+koil.idx_cv_file);
 
     // save result path and file name
-    koil.save_result_path="result/";
+    koil.save_result_path="./result/";
     //koil.rs_model_file = koil.save_result_path+koil.dataset_file+"_rs_model.txt";
     //koil.fifo_model_file = koil.save_result_path+koil.dataset_file+"_fifo_model.txt";
 

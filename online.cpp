@@ -28,9 +28,10 @@ void online(KOIL& koil)
     svm_problem prob=koil.prob;
     koil_result rs_result;
     koil_result fifo_result;
-    rs_result.initial_result(20);
-    fifo_result.initial_result(20);
-
+//    rs_result.initial_result(20);
+//    fifo_result.initial_result(20);
+    rs_result.initial_result(1);
+    fifo_result.initial_result(1);
     auto run_rs_fifo = [&](int* id_train, int n_train, int* id_test, int n_test, int k)
     {
         //2. KOIL_FIFO++
@@ -39,10 +40,12 @@ void online(KOIL& koil)
         fifo_model.param.C = C;
         fifo_model.param.gamma = g;
         koil.fifo_plus(id_train, n_train, id_test, n_test, losstype, fifo_model,
-                  fifo_result.auc[k-1],fifo_result.accuracy[k-1],
+                  fifo_result.auc[k-1],fifo_result.accuracy[k-1], fifo_result.precision[k-1], fifo_result.recall[k-1],
                 fifo_result.time[k-1],fifo_result.err_cnt[k-1]);
         cout<<"FIFO++"<<endl<<"auc="<<fifo_result.auc[k-1]<<endl;
         cout<<"accuracy="<<fifo_result.accuracy[k-1]<<endl;
+        cout<<"precision="<<fifo_result.precision[k-1]<<endl;
+        cout<<"recall="<<fifo_result.recall[k-1]<<endl;
 
         //1. KOIL_RS++
         svm_model rs_model;
@@ -50,22 +53,24 @@ void online(KOIL& koil)
         rs_model.param.C = C;
         rs_model.param.gamma = g;
         koil.rs_plus(id_train, n_train, id_test, n_test, losstype, rs_model,
-                rs_result.auc[k-1],rs_result.accuracy[k-1],
+                rs_result.auc[k-1],rs_result.accuracy[k-1],rs_result.precision[k-1], rs_result.recall[k-1],
                 rs_result.time[k-1],rs_result.err_cnt[k-1]);
         cout<<"RS++"<<endl<<"auc="<<rs_result.auc[k-1]<<endl;
         cout<<"accuracy="<<rs_result.accuracy[k-1]<<endl;
+        cout<<"precision="<<rs_result.precision[k-1]<<endl;
+        cout<<"recall="<<rs_result.recall[k-1]<<endl;
 
 
     };
 
-    //std::vector<boost::shared_ptr<boost::thread>> thread_pool(1);
-    std::vector<boost::shared_ptr<boost::thread>> thread_pool(20);
-    //for(int i = 1; i<=1; i++){
-    for(int i=1;i<=4;i++){
+    std::vector<boost::shared_ptr<boost::thread>> thread_pool(1);
+//    std::vector<boost::shared_ptr<boost::thread>> thread_pool(20);
+    for(int i = 1; i<=1; i++){
+//    for(int i=1;i<=4;i++){
         //int* & indice = prob.idx_cv[:,i-1];
         int head = 0;
-        //for(int j=1;j<=1;j++){
-        for(int j=1;j<=5;j++){
+        for(int j=1;j<=1;j++){
+//        for(int j=1;j<=5;j++){
             int k=5*(i-1)+j;
             cout<<"The"<<k<<"-th trial"<<endl;
 

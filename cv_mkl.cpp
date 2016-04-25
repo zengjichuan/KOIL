@@ -27,11 +27,12 @@ boost::mutex best_c_mutex;
 //boost::mutex best_g_mutex;
 boost::mutex file_mutex;
 
-int cnum, gnum;
-int cstart, gstart;
-int cstep, gstep;
+int cnum, etanum;
+int cstart, etastart;
+int cstep, etastep;
 int cvfold;
 string losstype;
+double smooth_delta;
 
 void parallel_cross_validation(KOIL& koil, int*& id_x, double*& y, int*& idx_j, int n_data)
 {
@@ -98,8 +99,8 @@ void parallel_cross_validation(KOIL& koil, int*& id_x, double*& y, int*& idx_j, 
             vector<int> degreelist;
             for(int i=-6; i<=6;i++) glist.push_back(std::pow(2,i));
             for(int i=1; i<=3;i++) degreelist.push_back(i);
-            mkl.initialize(100,0.8,clist[c_index],glist,degreelist);
-            koil.mkl_rs_plus(id_train, n_train, id_test, n_test, losstype,
+            mkl.initialize(100,smooth_delta,clist[c_index],glist,degreelist);
+            koil.mkl_rs_plus_m2(id_train, n_train, id_test, n_test, losstype,
                     mkl,
                     AUC_RS[fold-1],Acc_RS[fold-1],
                     rs_time,rs_err_cnt);
@@ -164,9 +165,9 @@ void parallel_cross_validation(KOIL& koil, int*& id_x, double*& y, int*& idx_j, 
 
 int main(int argc, char **argv)
 {
-    if(argc != 7)
+    if(argc != 8)
     {
-        cout<<"Argument format : "<<argv[0]<<"<dataset_file> <Num of clist> <c start> <cstep> <cvfold> <loss type>"<<endl;
+        cout<<"Argument format : "<<argv[0]<<"<dataset_file> <Num of clist> <c start> <cstep> <cvfold> <loss type> <smooth delta>"<<endl;
         return 0;
     }
 
@@ -178,6 +179,7 @@ int main(int argc, char **argv)
     cstep = atoi(argv[4]);
     cvfold = atoi(argv[5]);
     losstype = string(argv[6]);
+    smooth_delta = atof(argv[7]);
     cout<<"cvfold"<<cvfold<<endl;
     koil.load_data_path = "dataset/";
 

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include "svm.h"
+#include <iostream>
 using namespace std;
 
 
@@ -21,6 +22,8 @@ struct koil_result
     int runs;         //number of runs
     double* auc;      //AUC for each run
     double* accuracy; //Accuracy for each run
+    double* precision;
+    double* recall;
     double* time;     //Time for each run
     int* err_cnt;      //Misclassified samples online
 
@@ -57,6 +60,10 @@ public:
     string fifo_result_file;
     string log_file;
 
+    //test
+    //ofstream fout;
+
+
     // main functions for KOIL
     /**
      * @brief KOIL_RS++
@@ -72,7 +79,7 @@ public:
      * @return err_count the number of the misclassified samples online
      */
     void rs_plus(int* id_train,int cnt_train, int* id_test, int cnt_test, string losstype,
-                 svm_model& model,double& AUC,double& Accuracy, double& time, int& err_count);
+                 svm_model& model,double& AUC,double& Accuracy, double &Precision, double &Recall, double& time, int& err_count);
 
     /**
      * @brief KOIL_FIFO++
@@ -88,7 +95,7 @@ public:
      * @return err_count the number of the misclassified samples online
      */
     void fifo_plus(int* id_train,int cnt_train, int* id_test, int cnt_test, string losstype,
-                   svm_model& model,double& AUC,double& Accuracy, double& time, int& err_count);
+                   svm_model& model,double& AUC,double& Accuracy, double &Precision, double &Recall, double& time, int& err_count);
 
     /**
      * @brief KOIL_MKL_FIFO++
@@ -104,7 +111,7 @@ public:
      * @return err_count the number of the misclassified samples online
      */
     void mkl_fifo_plus(int* id_train,int cnt_train, int* id_test, int cnt_test, string losstype,
-                       svm_mkl &model,double& AUC,double& Accuracy, double& time, int& err_count);
+                       svm_mkl &model,double& AUC,double& Accuracy, double &Precision, double &Recall, double& time, int& err_count);
 
     /**
      * @brief KOIL_MKL_RS++
@@ -120,7 +127,7 @@ public:
      * @return err_count the number of the misclassified samples online
      */
     void mkl_rs_plus(int* id_train,int cnt_train, int* id_test, int cnt_test, string losstype,
-                       svm_mkl &model,double& AUC,double& Accuracy, double& time, int& err_count);
+                       svm_mkl &model,double& AUC,double& Accuracy, double &Precision, double &Recall, double& time, int& err_count);
 
     /**
      * @brief KOIL_MKL_FIFO++
@@ -136,7 +143,7 @@ public:
      * @return err_count the number of the misclassified samples online
      */
     void mkl_fifo_plus_m(int* id_train,int cnt_train, int* id_test, int cnt_test, string losstype,
-                       svm_mkl &model,double& AUC,double& Accuracy, double& time, int& err_count);
+                       svm_mkl &model,double& AUC,double& Accuracy, double &Precision, double &Recall, double& time, int& err_count);
 
     /**
      * @brief KOIL_MKL_RS++
@@ -152,7 +159,17 @@ public:
      * @return err_count the number of the misclassified samples online
      */
     void mkl_rs_plus_m(int* id_train,int cnt_train, int* id_test, int cnt_test, string losstype,
-                       svm_mkl &model,double& AUC,double& Accuracy, double& time, int& err_count);
+                       svm_mkl &model,double& AUC,double& Accuracy, double &Precision, double &Recall, double& time, int& err_count);
+
+    void mkl_fifo_plus_m2(int* id_train,int cnt_train, int* id_test, int cnt_test, string losstype,
+                       svm_mkl &model,double& AUC,double& Accuracy, double &Precision, double &Recall, double& time, int& err_count);
+    void mkl_rs_plus_m2(int* id_train,int cnt_train, int* id_test, int cnt_test, string losstype,
+                       svm_mkl &model,double& AUC,double& Accuracy, double &Precision, double &Recall, double& time, int& err_count);
+
+    void mkl_fifo_plus_m3(int* id_train,int cnt_train, int* id_test, int cnt_test, string losstype,
+                       svm_mkl &model,double& AUC,double& Accuracy, double &Precision, double &Recall, double& time, int& err_count);
+    void mkl_rs_plus_m3(int* id_train,int cnt_train, int* id_test, int cnt_test, string losstype,
+                       svm_mkl &model,double& AUC,double& Accuracy, double &Precision, double &Recall, double& time, int& err_count);
 
     // helper functions
     /**
@@ -202,11 +219,12 @@ public:
      * @param xt the t-th sample xt
      * @param yt the label of xt
      * @param model the current decision function f
+     * @param regularization a flag to determine whether regularization is used
      * @return at return the weight of xt
      * @return ploss pairwise loss value
      * @param losstype indicate l1 or l2 loss, default = "l1"
      */
-    void update_kernel(svm_node* xt,double yt, svm_model& model, double& at, double& ploss);
+    void update_kernel_l1(svm_node* xt,double yt, svm_model& model, double& at, double& ploss, bool regularization);
 
     /**
      * @brief update the weight for SV
@@ -214,11 +232,12 @@ public:
      * @param xt the t-th sample xt
      * @param yt the label of xt
      * @param model the current decision function f
+     * @param regularization a flag to determine whether regularization is used
      * @return at return the weight of xt
      * @return ploss pairwise loss value
      * @param losstype indicate l1 or l2 loss, default = "l1"
      */
-    void update_kernel_l2(svm_node* xt,double yt, svm_model& model, double& at, double& ploss);
+    void update_kernel_l2(svm_node* xt,double yt, svm_model& model, double& at, double& ploss, bool regularization);
 
     /**
      * @brief the calculate the AUC and Accuracy between f and y
@@ -230,7 +249,7 @@ public:
      * @return Accuracy Accuracy for the correct prediction
      */
     void evaluate_AUC(double* f, double* y, int n,
-                      double& AUC, double& Accuracy);
+                      double& AUC, double& Accuracy, double &Precision, double &Recall);
 
 
 };
