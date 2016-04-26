@@ -65,6 +65,8 @@ void parallel_cross_validation(KOIL& koil, int*& id_x, double*& y, int*& idx_j, 
     {
         double AUC_RS[]={0,0,0,0,0};
         double Acc_RS[]={0,0,0,0,0};
+        double Pre_RS[]={0,0,0,0,0};
+        double Rec_RS[]={0,0,0,0,0};
         // Five fold cross-validation
         for(int fold=1;fold<=cvfold;fold++){
             cout<<"Fold:"<<fold<<endl;
@@ -101,7 +103,7 @@ void parallel_cross_validation(KOIL& koil, int*& id_x, double*& y, int*& idx_j, 
             rs.param.gamma=glist[g_index];
             koil.rs_plus(id_train, n_train, id_test, n_test,losstype,
                     rs,
-                    AUC_RS[fold-1],Acc_RS[fold-1],
+                    AUC_RS[fold-1],Acc_RS[fold-1],Pre_RS[fold-1],Rec_RS[fold-1],
                     rs_time,rs_err_cnt);
 
             //2. KOIL_FIFO++
