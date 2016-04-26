@@ -40,7 +40,7 @@ void online_mkl(KOIL& koil)
         mkl_fifo_model.initialize(100,delta,C,glist,degreelist);
 
         koil.mkl_fifo_plus_m3(id_train, n_train, id_test, n_test, losstype, mkl_fifo_model,
-                  fifo_result.auc[k-1],fifo_result.accuracy[k-1],
+                  fifo_result.auc[k-1],fifo_result.accuracy[k-1],fifo_result.precision[k-1], fifo_result.recall[k-1],
                 fifo_result.time[k-1],fifo_result.err_cnt[k-1]);
         cout<<"FIFO++"<<endl<<"auc="<<fifo_result.auc[k-1]<<endl;
         cout<<"accuracy="<<fifo_result.accuracy[k-1]<<endl;
@@ -60,7 +60,7 @@ void online_mkl(KOIL& koil)
         //mkl_rs_model.initialize(100,beta,C,glist);
 
         koil.mkl_rs_plus_m3(id_train, n_train, id_test, n_test, losstype, mkl_rs_model,
-                rs_result.auc[k-1],rs_result.accuracy[k-1],
+                rs_result.auc[k-1],rs_result.accuracy[k-1],rs_result.precision[k-1], rs_result.recall[k-1],
                 rs_result.time[k-1],rs_result.err_cnt[k-1]);
         cout<<"RS++"<<endl<<"auc="<<rs_result.auc[k-1]<<endl;
         cout<<"accuracy="<<rs_result.accuracy[k-1]<<endl;
