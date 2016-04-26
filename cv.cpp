@@ -23,6 +23,7 @@ using std::pow;
 
 boost::mutex brs_auc_mutex;
 boost::mutex brs_acc_mutex;
+boost::mutex brs_f1_mutex;
 boost::mutex best_c_mutex;
 boost::mutex best_eta_mutex;
 boost::mutex file_mutex;
@@ -47,9 +48,11 @@ void parallel_cross_validation(KOIL& koil, int*& id_x, double*& y, int*& idx_j, 
     double* glist = Malloc(double,etanum);
     double** auc_record=Malloc(double*,cnum);
     double** acc_record=Malloc(double*,cnum);
+    double** f1_record=Malloc(double*,cnum);
     for(int i=0;i<cnum;i++){
         auc_record[i] = Malloc(double,etanum);
         acc_record[i] = Malloc(double,etanum);
+        f1_record[i] = Malloc(double, etanum);
     }
 
     clist[0] = pow(2,cstart);
@@ -61,6 +64,7 @@ void parallel_cross_validation(KOIL& koil, int*& id_x, double*& y, int*& idx_j, 
     best_rs_C = best_fifo_C = best_rs_gamma = best_fifo_gamma = 0;
     double brs_auc = 0;
     double brs_acc = 0;
+    double brs_f1 = 0;
     double rs_time;
     int rs_err_cnt;
 
@@ -114,21 +118,29 @@ void parallel_cross_validation(KOIL& koil, int*& id_x, double*& y, int*& idx_j, 
         }
         auc_record[c_index][g_index]=0;
         acc_record[c_index][g_index]=0;
+        f1_record[c_index][g_index]=0;
         for(int tcnt = 0; tcnt<cvfold;tcnt++ ){
             auc_record[c_index][g_index] += AUC_RS[tcnt];
             acc_record[c_index][g_index] += Acc_RS[tcnt];
+            f1_record[c_index][g_index] +=
+                    2*Pre_RS[tcnt]*Rec_RS[tcnt]/(Pre_RS[tcnt]+Rec_RS[tcnt]);
         }
         auc_record[c_index][g_index] /= cvfold;
         acc_record[c_index][g_index] /= cvfold;
+        f1_record[c_index][g_index] /= cvfold;
         cout<<"Avg AUC = "<<auc_record[c_index][g_index]<<endl;
         cout<<"Avg Acc = "<<acc_record[c_index][g_index]<<endl;
+        cout<<"Avg F1 = "<<f1_record[c_index][g_index]<<endl;
 
         brs_auc_mutex.lock();
         brs_acc_mutex.lock();
+        brs_f1_mutex.lock();
         best_c_mutex.lock();
         best_eta_mutex.lock();
-        if(brs_acc<acc_record[c_index][g_index]){
-            brs_acc = acc_record[c_index][g_index];
+        if(brs_f1<f1_record[c_index][g_index]){
+            brs_f1 = f1_record[c_index][g_index];
+//        if(brs_acc<acc_record[c_index][g_index]){
+//            brs_acc = acc_record[c_index][g_index];
 //        if(brs_auc<auc_record[c_index][g_index]){
 //            brs_auc = auc_record[c_index][g_index];
             best_rs_C = clist[c_index];
@@ -136,6 +148,7 @@ void parallel_cross_validation(KOIL& koil, int*& id_x, double*& y, int*& idx_j, 
         }
         brs_auc_mutex.unlock();
         brs_acc_mutex.unlock();
+        brs_f1_mutex.unlock();
         best_c_mutex.unlock();
         best_eta_mutex.unlock();
     };
